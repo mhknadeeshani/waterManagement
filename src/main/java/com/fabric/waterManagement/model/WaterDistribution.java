@@ -2,13 +2,13 @@ package com.fabric.waterManagement.model;
 
 import java.util.List;
 
-public class WaterDistributionType {
+public class WaterDistribution {
 
     private String distributionType;
 
     private List<Rate> rate;
 
-    public WaterDistributionType(String distributionType, List<Rate> rate) {
+    public WaterDistribution(String distributionType, List<Rate> rate) {
         this.distributionType = distributionType;
         this.rate = rate;
     }

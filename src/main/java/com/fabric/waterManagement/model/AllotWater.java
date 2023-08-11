@@ -1,6 +1,6 @@
 package com.fabric.waterManagement.model;
 
-import com.fabric.waterManagement.enums.ApartmentType;
+import java.util.Objects;
 
 public class AllotWater {
 
@@ -31,6 +31,19 @@ public class AllotWater {
 
     public void setNoOFGuest(Integer noOFGuest) {
         this.noOFGuest = noOFGuest;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AllotWater that = (AllotWater) o;
+        return apartmentType.equals(that.apartmentType) && waterRatio.equals(that.waterRatio) && Objects.equals(noOFGuest, that.noOFGuest);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(apartmentType, waterRatio, noOFGuest);
     }
 
     @Override

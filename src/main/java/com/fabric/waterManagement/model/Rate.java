@@ -4,9 +4,9 @@ public class Rate {
 
     private WaterLimit volume;
 
-    private int rate;
+    private Double rate;
 
-    public Rate(WaterLimit volume, int rate) {
+    public Rate(WaterLimit volume, Double rate) {
         this.volume = volume;
         this.rate = rate;
     }
@@ -19,11 +19,11 @@ public class Rate {
         this.volume = volume;
     }
 
-    public int getRate() {
+    public Double getRate() {
         return rate;
     }
 
-    public void setRate(int rate) {
+    public void setRate(Double rate) {
         this.rate = rate;
     }
 }

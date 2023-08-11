@@ -2,22 +2,23 @@ package com.fabric.waterManagement.repository;
 
 import com.fabric.waterManagement.enums.WaterDistributionMethods;
 import com.fabric.waterManagement.model.Rate;
-import com.fabric.waterManagement.model.WaterDistributionType;
 import com.fabric.waterManagement.model.WaterLimit;
-import java.util.ArrayList;
-import java.util.List;
+
+import java.util.*;
 
 
 public class WaterDistributionRepo {
 
-    public List<WaterDistributionType> getDistrubutionRates(){
-        List<WaterDistributionType> distributionList = new ArrayList();
+    public static Map<String, List<Rate>> getDistrubutionRates() {
+        Map<String, List<Rate>> waterRateMap = new HashMap<>();
+        waterRateMap.put(WaterDistributionMethods.CORPORATION.toString(), Arrays.asList(new Rate(new WaterLimit(0, 1500), 1d)));
+        waterRateMap.put(WaterDistributionMethods.BOREWELL.toString(), Arrays.asList(new Rate(new WaterLimit(0, 1500), 1.5d)));
         List<Rate> r = new ArrayList<>();
-        Rate r1 = new Rate(new WaterLimit(0,1500),1);
-        r.add(r1);
-        distributionList.add(new WaterDistributionType(WaterDistributionMethods.CORPORATION.toString(), r ));
-        distributionList.add(new WaterDistributionType(WaterDistributionMethods.BOREWELL.toString(), r));
-
-        return distributionList;
+        r.add(new Rate(new WaterLimit(0, 500), 2d));
+        r.add(new Rate(new WaterLimit(500, 1500), 3d));
+        r.add(new Rate(new WaterLimit(1500, 3000), 5d));
+        r.add(new Rate(new WaterLimit(3000, 20000), 8d));
+        waterRateMap.put(WaterDistributionMethods.TANKER.toString(), r);
+        return waterRateMap;
     }
 }

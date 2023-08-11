@@ -5,8 +5,8 @@ import org.junit.jupiter.api.Test;
 
 class WaterManagementApplicationTests {
 
-	@Test
-	void contextLoads() {
-	}
+    @Test
+    void contextLoads() {
+    }
 
 }

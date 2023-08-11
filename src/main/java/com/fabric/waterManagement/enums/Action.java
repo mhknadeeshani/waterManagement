@@ -5,4 +5,6 @@ public enum Action {
     ALLOT_WATER,
     ADD_GUESTS,
     BILL
+
+
 }

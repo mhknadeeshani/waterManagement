@@ -2,23 +2,25 @@ package com.fabric.waterManagement.model;
 
 public class WaterRatio {
 
-    private int corporation;
+    private Double corporation;
 
-    private int borewell;
+    private Double borewell;
 
-    public int getCorporation() {
+    public Double getCorporation() {
         return corporation;
     }
 
-    public void setCorporation(int corporation) {
+    public void setCorporation(Double corporation) {
         this.corporation = corporation;
     }
 
-    public int getBorewell() {
+    public Double getBorewell() {
         return borewell;
     }
 
-    public void setBorewell(int borewell) {
+    public void setBorewell(Double borewell) {
         this.borewell = borewell;
     }
 }
+
+
