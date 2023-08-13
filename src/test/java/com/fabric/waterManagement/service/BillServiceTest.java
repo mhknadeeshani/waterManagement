@@ -1,6 +1,6 @@
 package com.fabric.waterManagement.service;
 
-import com.fabric.waterManagement.enums.WaterDistributionMethods;
+import com.fabric.waterManagement.enums.WaterDistributionMethod;
 import com.fabric.waterManagement.model.AllotWater;
 import com.fabric.waterManagement.model.Bill;
 import org.junit.jupiter.api.Assertions;
@@ -13,7 +13,7 @@ public class BillServiceTest {
     BillService billService;
     AllotWater allotWater;
     Integer occupantsWaterConsumption;
-    WaterDistributionMethods waterDistributionMethod;
+    WaterDistributionMethod waterDistributionMethod;
     Bill finalBill;
 
 
@@ -33,9 +33,9 @@ public class BillServiceTest {
 
     @Test
     public void getFlatRateTest() {
-        waterDistributionMethod = WaterDistributionMethods.BOREWELL;
+        waterDistributionMethod = WaterDistributionMethod.BOREWELL;
         double corporationWaterVolume = 1200d;
-        double flatRate = billService.getFlatRate(waterDistributionMethod.toString(), corporationWaterVolume);
+        double flatRate = billService.getFlatRate(waterDistributionMethod, corporationWaterVolume);
 
         Assertions.assertEquals(flatRate, 1.5d);
     }
@@ -49,7 +49,7 @@ public class BillServiceTest {
 
     @Test
     public void getSlabRateBillTest() {
-        waterDistributionMethod = WaterDistributionMethods.TANKER;
+        waterDistributionMethod = WaterDistributionMethod.TANKER;
         Integer guestWaterConsumption = 1500;
         double billForGuess = billService.getSlabRateBill(guestWaterConsumption, waterDistributionMethod);
         Assertions.assertEquals(billForGuess, 4000);

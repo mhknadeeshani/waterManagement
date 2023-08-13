@@ -1,6 +1,6 @@
 package com.fabric.waterManagement.enums;
 
-public enum WaterDistributionMethods {
+public enum WaterDistributionMethod {
     CORPORATION,
     BOREWELL,
     TANKER

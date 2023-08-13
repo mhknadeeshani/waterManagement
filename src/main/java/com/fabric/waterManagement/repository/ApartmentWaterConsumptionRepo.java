@@ -10,10 +10,19 @@ import static com.fabric.waterManagement.util.Constants.APARTMENT_TYPE_2_ROOMS;
 
 public class ApartmentWaterConsumptionRepo {
 
-    public static Map<Integer, Apartment> getEstimatedWaterConsumption() {
-        Map<Integer, Apartment> apartmentEstimatedWater = new HashMap<>();
+    static Map<Integer, Apartment> apartmentEstimatedWater;
+
+    static {
+        apartmentEstimatedWater = new HashMap<>();
         apartmentEstimatedWater.put(APARTMENT_TYPE_1_ROOMS, new Apartment(2, 3));
         apartmentEstimatedWater.put(APARTMENT_TYPE_2_ROOMS, new Apartment(3, 5));
+    }
+
+    public static Map<Integer, Apartment> getEstimatedWaterConsumption() {
         return apartmentEstimatedWater;
+    }
+
+    public static Apartment findByType(Integer type){
+        return apartmentEstimatedWater.getOrDefault(type, null);
     }
 }

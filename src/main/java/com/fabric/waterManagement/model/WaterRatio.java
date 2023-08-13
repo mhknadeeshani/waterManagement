@@ -4,7 +4,7 @@ public class WaterRatio {
 
     private Double corporation;
 
-    private Double borewell;
+    private Double boreWell;
 
     public Double getCorporation() {
         return corporation;
@@ -14,12 +14,12 @@ public class WaterRatio {
         this.corporation = corporation;
     }
 
-    public Double getBorewell() {
-        return borewell;
+    public Double getBoreWell() {
+        return boreWell;
     }
 
-    public void setBorewell(Double borewell) {
-        this.borewell = borewell;
+    public void setBoreWell(Double boreWell) {
+        this.boreWell = boreWell;
     }
 }
 

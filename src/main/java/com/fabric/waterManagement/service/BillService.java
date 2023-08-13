@@ -1,15 +1,14 @@
 package com.fabric.waterManagement.service;
 
-import com.fabric.waterManagement.enums.WaterDistributionMethods;
+import com.fabric.waterManagement.enums.WaterDistributionMethod;
 import com.fabric.waterManagement.model.*;
 import com.fabric.waterManagement.repository.ApartmentWaterConsumptionRepo;
 import com.fabric.waterManagement.repository.WaterDistributionRepo;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
-import static com.fabric.waterManagement.enums.WaterDistributionMethods.*;
+import static com.fabric.waterManagement.enums.WaterDistributionMethod.*;
 import static com.fabric.waterManagement.util.Constants.ALLOTTED_PER_DAY;
 import static com.fabric.waterManagement.util.Constants.NO_OF_DAYS;
 
@@ -22,25 +21,28 @@ public class BillService {
         Bill finalBill = new Bill();
         double finalBillAmount;
 
-        Map<Integer, Apartment> estimatedWater = ApartmentWaterConsumptionRepo.getEstimatedWaterConsumption();
-        Integer waterConsumptionForOccupants = estimatedWater.get(Integer.parseInt(allotWater.getApartmentType())).getEstimatedOccupants() * ALLOTTED_PER_DAY * NO_OF_DAYS;
+        int apartmentType = Integer.parseInt(allotWater.getApartmentType());
+
+        Integer waterConsumptionForOccupants = Optional.ofNullable(ApartmentWaterConsumptionRepo.findByType(apartmentType))
+                .orElse(new Apartment(0, 0)).getEstimatedOccupants() * ALLOTTED_PER_DAY * NO_OF_DAYS;
+
         Optional<Integer> noOfGuests = Optional.ofNullable(allotWater.getNoOFGuest());
         Integer waterConsumptionForGuests = noOfGuests.orElse(0) * ALLOTTED_PER_DAY * NO_OF_DAYS;
+
         finalBill.setTotalWaterConsumed(waterConsumptionForOccupants + waterConsumptionForGuests);
 
         occupantsBill = getWaterBillForOccupants(waterConsumptionForOccupants, allotWater);
         tankerBill = getSlabRateBill(waterConsumptionForGuests, TANKER);
-
         finalBillAmount = occupantsBill + tankerBill;
+
         finalBill.setTotalCost((int) finalBillAmount);
 
         return finalBill;
     }
 
 
-    public Double getFlatRate(String waterDistributionMethod, double waterVolume) {
-        Map<String, List<Rate>> map = WaterDistributionRepo.getDistrubutionRates();
-        List<Rate> rates = map.get(waterDistributionMethod);
+    public Double getFlatRate(WaterDistributionMethod waterDistributionMethod, double waterVolume) {
+        List<Rate> rates = WaterDistributionRepo.findByDistributionMethod(waterDistributionMethod);
         Rate rate = rates.stream().filter(r -> waterVolume >= r.getVolume().getMin())
                 .filter(r -> waterVolume <= r.getVolume().getMax())
                 .findFirst()
@@ -49,13 +51,7 @@ public class BillService {
 
     }
 
-    private WaterRatio generateRation(String ratio) {
-        String[] waterRatioArr = ratio.split(":");
-        WaterRatio wr = new WaterRatio();
-        wr.setCorporation(Double.valueOf(waterRatioArr[0]));
-        wr.setBorewell(Double.valueOf(waterRatioArr[1]));
-        return wr;
-    }
+
 
     public Double getWaterBillForOccupants(Integer occupantsWaterConsumption, AllotWater allotWater) {
         double corporationWaterVolume;
@@ -63,21 +59,21 @@ public class BillService {
         double borewellWaterVolume;
         double borewellWaterRate;
         double stageOneBill;
-        WaterRatio wr = generateRation(allotWater.getWaterRatio());
+        InputProcessingService inputProcessingService = new InputProcessingService();
+        WaterRatio wr = inputProcessingService.generateRatio(allotWater.getWaterRatio());
 
-        corporationWaterVolume = occupantsWaterConsumption * (wr.getCorporation() / (wr.getCorporation() + wr.getBorewell()));
-        corporateWaterRate = getFlatRate(CORPORATION.toString(), corporationWaterVolume);
+        corporationWaterVolume = occupantsWaterConsumption * (wr.getCorporation() / (wr.getCorporation() + wr.getBoreWell()));
+        corporateWaterRate = getFlatRate(CORPORATION, corporationWaterVolume);
 
-        borewellWaterVolume = occupantsWaterConsumption * (wr.getBorewell() / (wr.getCorporation() + wr.getBorewell()));
-        borewellWaterRate = getFlatRate(BOREWELL.toString(), borewellWaterVolume);
+        borewellWaterVolume = occupantsWaterConsumption * (wr.getBoreWell() / (wr.getCorporation() + wr.getBoreWell()));
+        borewellWaterRate = getFlatRate(BOREWELL, borewellWaterVolume);
 
         stageOneBill = (corporationWaterVolume * corporateWaterRate) + (borewellWaterVolume * borewellWaterRate);
         return stageOneBill;
     }
 
-    public Double getSlabRateBill(Integer waterConsumption, WaterDistributionMethods waterDistributionMethod) {
-        Map<String, List<Rate>> map = WaterDistributionRepo.getDistrubutionRates();
-        List<Rate> rates = map.get(waterDistributionMethod.toString());
+    public Double getSlabRateBill(Integer waterConsumption, WaterDistributionMethod waterDistributionMethod) {
+        List<Rate> rates = WaterDistributionRepo.findByDistributionMethod(waterDistributionMethod);
         double tankerBill = 0d;
         double variableWaterConsumption = waterConsumption;
         double levelConsumption;
@@ -91,13 +87,11 @@ public class BillService {
         return tankerBill;
     }
 
-    /*
-    *   r.add(new Rate(new WaterLimit(0,500),2d));
-        r.add(new Rate(new WaterLimit(500,1500),3d));
-        r.add(new Rate(new WaterLimit(1500,3000),5d));
-        r.add(new Rate(new WaterLimit(3000,20000),8d));
-    *
-    *
-    * */
-
+    public String billGeneration(String filePath) {
+        FileReaderService fileReaderService = new FileReaderService();
+        BillService billService = new BillService();
+        AllotWater allotWater = fileReaderService.readFile(filePath);
+        Bill bill = billService.generateFinalBill(allotWater);
+        return bill.getTotalWaterConsumed() + " " + bill.getTotalCost();
+    }
 }

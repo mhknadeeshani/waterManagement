@@ -19,10 +19,11 @@ public class FileReaderService {
     public AllotWater readFile(String filePath) {
 
         AllotWater allotWater = new AllotWater();
-
+        InputProcessingService inputProcessingService = new InputProcessingService();
         if (filePath.isEmpty()) {
             throw new InvalidFileNameException(INVALID_FILE);
         }
+
         try {
             File file = new File(filePath);
             Scanner sc = new Scanner(file);
@@ -31,8 +32,9 @@ public class FileReaderService {
             while (sc.hasNextLine()) {
                 String line = sc.nextLine();
                 String[] inputColumns = line.split(" ");
-                Action distributionType = Action.valueOf(inputColumns[0]);
-                switch (distributionType) {
+                Action actionType = inputProcessingService.generateAction(inputColumns[0]);
+
+                switch (actionType) {
                     case ALLOT_WATER:
                         allotWater.setApartmentType(inputColumns[1]);
                         allotWater.setWaterRatio(inputColumns[2]);
@@ -42,6 +44,7 @@ public class FileReaderService {
                         allotWater.setNoOFGuest(noOfGuest);
                         break;
                     case BILL:
+                    case NO_ACTION:
                         break;
                     default:
                         LOGGER.log(Level.SEVERE, "Please check the input format");
@@ -49,9 +52,8 @@ public class FileReaderService {
             }
         } catch (FileNotFoundException e) {
             LOGGER.log(Level.SEVERE, "FileNotFoundException occurred while reading file");
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Exception occurred while reading file");
-
+        } catch (Exception e){
+            LOGGER.log(Level.SEVERE, "Exception occurred while reading file" +e);
         }
         return allotWater;
     }
