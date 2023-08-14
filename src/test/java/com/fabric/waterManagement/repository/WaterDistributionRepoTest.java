@@ -10,8 +10,7 @@ import java.util.Map;
 
 public class WaterDistributionRepoTest {
 
-    public void setUp() {
-    }
+
 
     @Test
     public void getDistributionRates() {
